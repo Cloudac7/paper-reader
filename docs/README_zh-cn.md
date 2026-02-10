@@ -63,3 +63,7 @@ uv run python src/main.py papers/demo.pdf -l Japanese
 *   `{paper}_2_deep_dive.md`: 方法论与实验详解 (精读结果)。
 *   `{paper}_3_validation.md`: 批判性评估报告。
 *   `{paper}_4_summary.md`: **最终综合总结报告**。
+
+## 📄 许可证
+
+本项目基于 MIT 许可证开源 - 详情请参阅 [LICENSE](LICENSE) 文件。

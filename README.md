@@ -65,3 +65,7 @@ All results are saved in the `output/` directory:
 *   `{paper}_2_deep_dive.md`: Detailed methodology and experiments.
 *   `{paper}_3_validation.md`: Critical review and limitations.
 *   `{paper}_4_summary.md`: **Final Executive Report**.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
