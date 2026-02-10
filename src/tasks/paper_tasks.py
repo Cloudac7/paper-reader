@@ -40,7 +40,9 @@ class PaperTasks:
                 3. Analyze the experimental setup and results.
                 4. Specifically look for 'how' it works, not just 'what' it does.
                 
-                IMPORTANT: The final output must be written in {language}.
+                IMPORTANT: 
+                - When using the vector search tool, ALWAYS use ENGLISH keywords/queries to ensure the best retrieval results, even if the final output language is different.
+                - The final output must be written in {language}.
             """),
             expected_output=f"A technical report detailing the Methodology (step-by-step), Experimental Setup, and Key Results (with metrics). Written in {language}.",
             agent=agent,

@@ -11,7 +11,7 @@ DB_PATH = os.path.join(os.getcwd(), "chroma_db")
 class VectorSearchInput(BaseModel):
     query: str = Field(
         ...,
-        description="The semantic query string to search for related content in the paper.",
+        description="The semantic query string to search for related content in the paper. IMPORTANT: Always use ENGLISH for the query to maximize retrieval performance.",
     )
     n_results: int = Field(
         default=3, description="Number of results to return (default: 3)."
