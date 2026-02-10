@@ -4,19 +4,19 @@
 
 ## 项目概述
 
-本项目旨在开发一个基于 CrewAI 框架的智能 Agent 系统，模拟科研人员的阅读习惯（略读、精读、批判性评估），从 PDF 论文中提取深度结构化信息。使用 Microsoft `markitdown` 库作为底层解析引擎，以获取包含多模态信息（如图片描述、表格）的 Markdown 文本。
+本项目旨在开发一个基于 CrewAI 框架的智能 Agent 系统，模拟科研人员的阅读习惯（略读、精读、批判性评估），从 PDF 论文中提取深度结构化信息。使用 OpenDataLab `Mineru` 库作为底层解析引擎，以获取包含多模态信息（如图片描述、表格）的 Markdown 文本。
 
 ## 技术栈
 
 * **核心框架**: CrewAI (Agent 编排)
-* **PDF 解析**: Microsoft Markitdown (支持 PDF 转 Markdown，含图像 OCR 处理)
+* **PDF 解析**: OpenDataLab Mineru (Magic-PDF，支持 PDF 转 Markdown，含图像 OCR 处理)
 * **语言模型**: 建议使用 Claude 3.5 Sonnet 或 GPT-4o (具备极强的长文本和逻辑推理能力)
 * **向量数据库**: ChromaDB (用于章节检索)
 
 ## 编程准则
 
 * **模块化设计**: 解析模块、Agent 逻辑、任务逻辑需严格解耦。
-* **解析优先**: 在启动任何任务前，必须调用 `Markitdown` 生成完整的文本镜像。
+* **解析优先**: 在启动任何任务前，必须调用 `Mineru` 生成完整的文本镜像。
 * **语义分块**: 针对论文结构（Introduction, Method, Result, Conclusion）进行正则匹配或语义切分，避免简单的 Token 切割。
 * **输出格式**: 所有 Agent 的中间输出应保持结构化（JSON 或 Markdown 列表）。
 
@@ -28,7 +28,7 @@
 
 
 2. **结构分析师 (Scanning Specialist)**:
-* **职责**: 深入解析 `markitdown` 提取的图表描述和方法论章节。
+* **职责**: 深入解析 `Mineru` 提取的图表描述和方法论章节。
 * **目标**: 还原实验流程（如 PEMD 的四阶段逻辑），提取关键物理量和公式。
 
 
@@ -40,7 +40,7 @@
 
 ## 任务流设计 (Process Workflow)
 
-1. **Task: Pre-processing**: 调用 `markitdown` 处理上传的 PDF，保存为 `temp_paper.md`。
+1. **Task: Pre-processing**: 调用 `Mineru` 处理上传的 PDF，保存为 `temp_paper.md`。
 2. **Task: Skimming**: Skimmer Agent 生成“研究摘要卡片”。
 3. **Task: Deep Dive**: Scanning Specialist 根据摘要卡片，按章节提取算法、流程图逻辑。
 4. **Task: Validation**: Critical Reviewer 检查结果章节是否支撑了摘要中的声明。
@@ -48,13 +48,25 @@
 ## 核心实现逻辑参考
 
 ```python
-# 示例：Markitdown 集成
-from markitdown import MarkItDown
+# 示例：Mineru 集成
+import os
+from pathlib import Path
+from mineru.cli.common import read_fn
+from mineru.backend.hybrid.hybrid_analyze import doc_analyze as hybrid_doc_analyze
+from mineru.data.data_reader_writer import FileBasedDataWriter
+from mineru.utils.engine_utils import get_vlm_engine
 
 def parse_paper(file_path):
-    md = MarkItDown()
-    result = md.convert(file_path)
-    return result.text_content
+    # 配置 Mineru
+    pdf_bytes = read_fn(file_path)
+    output_dir = "output/temp"
+    
+    # 准备环境 (简化版)
+    backend = "auto-engine" # 或 vlm-auto-engine
+    # ... 调用核心解析逻辑 ...
+    # 参考 demo.py 的实现
+    
+    return md_content
 
 # 示例：CrewAI 任务分派
 # 需定义包含特定逻辑的 Task(description=..., expected_output=..., agent=...)
@@ -64,7 +76,7 @@ def parse_paper(file_path):
 ## 目录结构建议
 
 * `/src/agents/`: 存放各 Agent 的配置文件。
-* `/src/tools/`: 存放 `Markitdown` 解析工具类。
+* `/src/tools/`: 存放 `Mineru` 解析工具类。
 * `/src/tasks/`: 定义 CrewAI 的任务逻辑。
 * `/output/`: 存放解析后的结构化报告。
 

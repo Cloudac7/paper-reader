@@ -50,3 +50,17 @@ class PaperAgents:
             verbose=True,
             allow_delegation=True,
         )
+
+    def summary_agent(self):
+        return Agent(
+            role="Lead Research Summarizer",
+            goal="Synthesize the outputs from the Skimmer, Scanning Specialist, and Critical Reviewer to create a comprehensive final report.",
+            backstory=(
+                "You are the lead editor of a prestigious journal. Your job is to take the raw analysis from your team "
+                "(skimming, deep dive, and critique) and compile it into a polished, easy-to-read executive summary "
+                "for the decision makers. You ensure the tone is professional, the structure is clear, and all key insights are captured."
+            ),
+            llm=self.llm,
+            verbose=True,
+            allow_delegation=False,
+        )

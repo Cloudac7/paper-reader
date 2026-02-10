@@ -6,7 +6,7 @@ class PaperTasks:
     def preprocessing_task(self, agent, file_path):
         return Task(
             description=dedent(f"""
-                Read the paper at '{file_path}' using the Markitdown tool.
+                Read the paper at '{file_path}' using the MinerU tool.
                 This is a pre-processing step to extract the text content.
                 Ensure the extracted content is structured and comprehensive.
             """),
@@ -14,7 +14,7 @@ class PaperTasks:
             agent=agent,
         )
 
-    def skimming_task(self, agent, context):
+    def skimming_task(self, agent, context, output_file=None):
         return Task(
             description=dedent("""
                 Analyze the paper content provided in the context.
@@ -26,9 +26,10 @@ class PaperTasks:
             expected_output="A Markdown formatted Research Summary Card with sections: Title, Problem, Contribution, Method Overview, Structure.",
             agent=agent,
             context=context,
+            output_file=output_file,
         )
 
-    def deep_dive_task(self, agent, context):
+    def deep_dive_task(self, agent, context, output_file=None):
         return Task(
             description=dedent("""
                 Based on the summary provided, perform a deep dive into the technical details.
@@ -40,9 +41,10 @@ class PaperTasks:
             expected_output="A technical report detailing the Methodology (step-by-step), Experimental Setup, and Key Results (with metrics).",
             agent=agent,
             context=context,
+            output_file=output_file,
         )
 
-    def validation_task(self, agent, context):
+    def validation_task(self, agent, context, output_file=None):
         return Task(
             description=dedent("""
                 Review the technical report and the original paper's claims.
@@ -53,4 +55,25 @@ class PaperTasks:
             expected_output="A Critical Review Report listing: Strengths, Weaknesses, unsupported claims, and overall assessment.",
             agent=agent,
             context=context,
+            output_file=output_file,
+        )
+
+    def summary_task(self, agent, context, output_file=None):
+        return Task(
+            description=dedent("""
+                Synthesize the outputs from the previous agents (Research Summary Card, Technical Deep Dive, Critical Review)
+                into a single, cohesive final report.
+                The report MUST contain:
+                1. Title
+                2. Executive Summary (Abstract/Gist)
+                3. Methodology Overview (synthesized from deep dive)
+                4. Key Results & Metrics
+                5. Conclusion
+                6. Evaluation (from critical review)
+                Ensure the formatting is consistent Markdown.
+            """),
+            expected_output="A final, comprehensive Markdown report including Title, Executive Summary, Methodology, Results, Conclusion, and Evaluation.",
+            agent=agent,
+            context=context,
+            output_file=output_file,
         )

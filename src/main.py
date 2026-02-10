@@ -5,7 +5,7 @@ from crewai import Crew, Process, LLM
 from src.agents.paper_agents import PaperAgents
 from src.tasks.paper_tasks import PaperTasks
 from src.tools.vector_db_tool import PaperIndexer
-from src.tools.markitdown_tool import MarkitdownTool
+from src.tools.mineru_tool import MinerUTool
 
 
 def setup_llm():
@@ -51,7 +51,7 @@ def main():
         return
 
     print("Preprocessing: Converting PDF to Markdown...")
-    md_tool = MarkitdownTool()
+    md_tool = MinerUTool()
     markdown_content = md_tool._run(pdf_path)
 
     if markdown_content.startswith("Error"):
@@ -65,24 +65,48 @@ def main():
     with open("temp_paper.md", "w") as f:
         f.write(markdown_content)
 
+    output_dir = "output"
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    file_stem = os.path.splitext(os.path.basename(pdf_path))[0]
+
     agents = PaperAgents(llm)
     tasks = PaperTasks()
 
     skimmer = agents.skimmer_agent()
     scanner = agents.scanning_specialist_agent()
     reviewer = agents.critical_reviewer_agent()
+    summarizer = agents.summary_agent()
 
-    task_skim = tasks.skimming_task(skimmer, [])
+    task_skim = tasks.skimming_task(
+        skimmer, [], output_file=os.path.join(output_dir, f"{file_stem}_1_skimming.md")
+    )
     task_skim.description += (
         f"\n\nHere is the full paper content:\n\n{markdown_content}"
     )
 
-    task_deep = tasks.deep_dive_task(scanner, [task_skim])
-    task_valid = tasks.validation_task(reviewer, [task_deep])
+    task_deep = tasks.deep_dive_task(
+        scanner,
+        [task_skim],
+        output_file=os.path.join(output_dir, f"{file_stem}_2_deep_dive.md"),
+    )
+
+    task_valid = tasks.validation_task(
+        reviewer,
+        [task_deep],
+        output_file=os.path.join(output_dir, f"{file_stem}_3_validation.md"),
+    )
+
+    task_summary = tasks.summary_task(
+        summarizer,
+        [task_skim, task_deep, task_valid],
+        output_file=os.path.join(output_dir, f"{file_stem}_4_summary.md"),
+    )
 
     crew = Crew(
-        agents=[skimmer, scanner, reviewer],
-        tasks=[task_skim, task_deep, task_valid],
+        agents=[skimmer, scanner, reviewer, summarizer],
+        tasks=[task_skim, task_deep, task_valid, task_summary],
         process=Process.sequential,
         verbose=True,
     )
@@ -95,14 +119,7 @@ def main():
     print("########################\n")
     print(result)
 
-    output_dir = "output"
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-
-    output_path = os.path.join(output_dir, f"{os.path.basename(pdf_path)}_analysis.md")
-    with open(output_path, "w") as f:
-        f.write(str(result))
-    print(f"\nAnalysis saved to {output_path}")
+    print(f"\nAnalysis saved to {output_dir}")
 
 
 if __name__ == "__main__":

@@ -8,7 +8,7 @@ from src.main import main
 @patch("src.main.Crew")
 @patch("src.agents.paper_agents.Agent")
 @patch("src.tasks.paper_tasks.Task")
-@patch("src.main.MarkitdownTool")
+@patch("src.main.MinerUTool")
 @patch("src.main.PaperIndexer")
 @patch("src.main.setup_llm")
 @patch("os.path.exists")
@@ -57,8 +57,8 @@ def test_main_flow(
 
     mock_indexer_instance.index_content.assert_called()
 
-    assert mock_agent_cls.call_count == 3
-    assert mock_task_cls.call_count == 3
+    assert mock_agent_cls.call_count == 4
+    assert mock_task_cls.call_count == 4
 
     mock_crew_instance.kickoff.assert_called_once()
 

@@ -9,7 +9,6 @@ dependencies = [
     "crewai>=1.9.3",
     "langchain-anthropic>=0.3.22",
     "langchain-openai>=0.3.23",
-    "markitdown>=0.1.4",
     "python-dotenv>=1.1.1",
 ]
 
