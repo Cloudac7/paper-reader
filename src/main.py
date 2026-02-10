@@ -36,6 +36,9 @@ def main():
 
     parser = argparse.ArgumentParser(description="Paper Reader Agent System")
     parser.add_argument("pdf_path", help="Path to the PDF paper to analyze")
+    parser.add_argument(
+        "--language", "-l", default="Chinese", help="Language for the final report"
+    )
     args = parser.parse_args()
 
     pdf_path = os.path.abspath(args.pdf_path)
@@ -80,7 +83,10 @@ def main():
     summarizer = agents.summary_agent()
 
     task_skim = tasks.skimming_task(
-        skimmer, [], output_file=os.path.join(output_dir, f"{file_stem}_1_skimming.md")
+        skimmer,
+        [],
+        output_file=os.path.join(output_dir, f"{file_stem}_1_skimming.md"),
+        language=args.language,
     )
     task_skim.description += (
         f"\n\nHere is the full paper content:\n\n{markdown_content}"
@@ -90,18 +96,21 @@ def main():
         scanner,
         [task_skim],
         output_file=os.path.join(output_dir, f"{file_stem}_2_deep_dive.md"),
+        language=args.language,
     )
 
     task_valid = tasks.validation_task(
         reviewer,
         [task_deep],
         output_file=os.path.join(output_dir, f"{file_stem}_3_validation.md"),
+        language=args.language,
     )
 
     task_summary = tasks.summary_task(
         summarizer,
         [task_skim, task_deep, task_valid],
         output_file=os.path.join(output_dir, f"{file_stem}_4_summary.md"),
+        language=args.language,
     )
 
     crew = Crew(
